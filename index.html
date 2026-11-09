@@ -1,0 +1,512 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f5f7f2">
+    <title>Unitly · Unit Converter</title>
+    <style>
+      :root {
+        color-scheme: light;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-synthesis: none;
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        --ink: #173c30;
+        --muted: #718078;
+        --green: #245c43;
+        --line: #e4e9e1;
+        --paper: #fff;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        min-width: 320px;
+        min-height: 100vh;
+        margin: 0;
+        color: var(--ink);
+        background:
+          radial-gradient(ellipse at 50% 0%, #e8f0e2 0, transparent 44rem),
+          #f5f7f2;
+      }
+
+      button,
+      input,
+      select {
+        font: inherit;
+      }
+
+      button {
+        cursor: pointer;
+      }
+
+      .site-header {
+        width: min(1120px, calc(100% - 48px));
+        height: 88px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--ink);
+        font-size: 21px;
+        font-weight: 750;
+        letter-spacing: -0.8px;
+      }
+
+      .brand-mark {
+        display: grid;
+        width: 34px;
+        height: 34px;
+        place-items: center;
+        border-radius: 11px;
+        color: #fff;
+        background: var(--green);
+        font-size: 19px;
+      }
+
+      .header-note {
+        color: #79867d;
+        font-size: 10px;
+        font-weight: 650;
+        letter-spacing: 2px;
+      }
+
+      main {
+        width: min(760px, calc(100% - 40px));
+        margin: 62px auto 0;
+      }
+
+      .intro {
+        margin-bottom: 32px;
+        text-align: center;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0;
+        color: #65816e;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 2.2px;
+        text-transform: uppercase;
+      }
+
+      .eyebrow::before {
+        width: 18px;
+        height: 1px;
+        background: #8ca48f;
+        content: "";
+      }
+
+      h1 {
+        margin: 14px 0 12px;
+        font-size: clamp(36px, 6vw, 52px);
+        font-weight: 720;
+        letter-spacing: -2.7px;
+        line-height: 1.08;
+      }
+
+      .intro-copy {
+        max-width: 480px;
+        margin: 0 auto;
+        color: var(--muted);
+        font-size: 15px;
+        line-height: 1.7;
+      }
+
+      .converter-card {
+        padding: 28px;
+        border: 1px solid #e6eae3;
+        border-radius: 24px;
+        background: var(--paper);
+        box-shadow: 0 22px 65px rgb(34 61 43 / 8%), 0 2px 8px rgb(34 61 43 / 3%);
+      }
+
+      .card-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+      }
+
+      .card-heading h2 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 700;
+        letter-spacing: -0.3px;
+      }
+
+      .instant-note {
+        color: #859087;
+        font-size: 12px;
+      }
+
+      .tabs {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 5px;
+        margin-bottom: 26px;
+        padding: 5px;
+        border: 1px solid #edf0ea;
+        border-radius: 14px;
+        background: #f7f8f5;
+      }
+
+      .tabs button {
+        min-width: 0;
+        padding: 11px 8px;
+        border: 0;
+        border-radius: 10px;
+        color: #65756a;
+        background: transparent;
+        font-size: 13px;
+        font-weight: 600;
+        transition: background-color 140ms ease, color 140ms ease, box-shadow 140ms ease;
+      }
+
+      .tabs button[aria-selected="true"] {
+        color: #fff;
+        background: var(--green);
+        box-shadow: 0 2px 6px rgb(26 64 44 / 16%);
+      }
+
+      .value-field {
+        margin-bottom: 22px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 9px;
+        color: #52665a;
+        font-size: 12px;
+        font-weight: 650;
+      }
+
+      input,
+      select {
+        width: 100%;
+        min-width: 0;
+        border: 1px solid #e1e7df;
+        border-radius: 12px;
+        color: var(--ink);
+        background: #fff;
+        transition: border-color 140ms ease, box-shadow 140ms ease;
+      }
+
+      input {
+        padding: 14px 16px;
+        font-size: 25px;
+        font-weight: 560;
+        letter-spacing: -0.5px;
+      }
+
+      select {
+        padding: 13px 36px 13px 13px;
+        font-size: 14px;
+        font-weight: 550;
+      }
+
+      input:hover,
+      select:hover {
+        border-color: #bdcdbd;
+      }
+
+      .fields {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 44px minmax(0, 1fr);
+        gap: 14px;
+        align-items: end;
+      }
+
+      #swap {
+        display: grid;
+        width: 42px;
+        height: 42px;
+        margin-bottom: 1px;
+        place-items: center;
+        border: 1px solid #e4ebe2;
+        border-radius: 13px;
+        color: var(--green);
+        background: #f4f7f1;
+        font-size: 21px;
+        transition: transform 160ms ease, background-color 140ms ease;
+      }
+
+      #swap:hover {
+        transform: rotate(180deg);
+        background: #eaf1e7;
+      }
+
+      .result {
+        min-height: 142px;
+        margin-top: 25px;
+        padding: 20px 22px;
+        border: 1px solid #e5eee0;
+        border-radius: 17px;
+        background: linear-gradient(120deg, #f1f7ed, #f6f8f2);
+      }
+
+      .result-label {
+        color: #6d806f;
+        font-size: 10px;
+        font-weight: 750;
+        letter-spacing: 1.7px;
+      }
+
+      output {
+        display: block;
+        overflow-wrap: anywhere;
+        margin: 8px 0 5px;
+        color: #214f39;
+        font-size: clamp(28px, 5vw, 36px);
+        font-weight: 700;
+        letter-spacing: -1.2px;
+        line-height: 1.2;
+      }
+
+      #formula {
+        margin: 0;
+        color: #748277;
+        font-size: 12px;
+        line-height: 1.5;
+      }
+
+      footer {
+        margin: 22px 0 36px;
+        color: #879188;
+        font-size: 11px;
+        text-align: center;
+      }
+
+      button:focus-visible,
+      input:focus-visible,
+      select:focus-visible {
+        outline: 3px solid #a4c391;
+        outline-offset: 3px;
+      }
+
+      input:focus,
+      select:focus {
+        border-color: #8eae8d;
+        box-shadow: 0 0 0 3px rgb(142 174 141 / 15%);
+        outline: 0;
+      }
+
+      @media (max-width: 560px) {
+        .site-header {
+          width: calc(100% - 36px);
+          height: 72px;
+        }
+
+        .header-note {
+          display: none;
+        }
+
+        main {
+          width: calc(100% - 32px);
+          margin-top: 40px;
+        }
+
+        .intro {
+          margin-bottom: 26px;
+        }
+
+        h1 {
+          letter-spacing: -1.8px;
+        }
+
+        .intro-copy {
+          max-width: 350px;
+          font-size: 14px;
+        }
+
+        .converter-card {
+          padding: 20px 17px;
+          border-radius: 20px;
+        }
+
+        .instant-note {
+          font-size: 11px;
+        }
+
+        .tabs button {
+          padding: 10px 4px;
+          font-size: 12px;
+        }
+
+        .fields {
+          grid-template-columns: minmax(0, 1fr);
+          gap: 12px;
+        }
+
+        #swap {
+          justify-self: center;
+          transform: rotate(90deg);
+        }
+
+        #swap:hover {
+          transform: rotate(270deg);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          scroll-behavior: auto !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">↔</span>
+        Unitly
+      </div>
+      <span class="header-note">SMALL TOOL. EVERYDAY USE.</span>
+    </header>
+
+    <main>
+      <section class="intro" aria-labelledby="page-title">
+        <p class="eyebrow">The everyday converter</p>
+        <h1 id="page-title">
+          Every unit.<br>
+          Made simple.
+        </h1>
+        <p class="intro-copy">
+          Length, weight, temperature. Enter a value and get your answer instantly.
+        </p>
+      </section>
+
+      <section class="converter-card" aria-label="Unit conversion">
+        <div class="card-heading">
+          <h2>Convert units</h2>
+          <span class="instant-note">Updates instantly</span>
+        </div>
+        <div class="tabs" role="tablist" aria-label="Conversion category">
+          <button type="button" role="tab" aria-selected="true" data-type="length">
+            ↔&nbsp; Length
+          </button>
+          <button type="button" role="tab" aria-selected="false" data-type="mass">
+            ◈&nbsp; Weight
+          </button>
+          <button type="button" role="tab" aria-selected="false" data-type="temp">
+            ☀&nbsp; Temperature
+          </button>
+        </div>
+
+        <div class="value-field">
+          <label for="value">Value</label>
+          <input
+            id="value"
+            type="number"
+            value="1"
+            step="any"
+            placeholder="Enter a value to convert"
+          >
+        </div>
+
+        <div class="fields">
+          <div>
+            <label for="from">From</label>
+            <select id="from"></select>
+          </div>
+          <button type="button" id="swap" aria-label="Swap units">
+            ⇄
+          </button>
+          <div>
+            <label for="to">To</label>
+            <select id="to"></select>
+          </div>
+        </div>
+
+        <div class="result" aria-live="polite">
+          <span class="result-label">CONVERSION RESULT</span>
+          <output id="result"></output>
+          <p id="formula"></p>
+        </div>
+      </section>
+
+      <footer>
+        No sign-up <span aria-hidden="true">·</span>
+        Instant conversion <span aria-hidden="true">·</span>
+        Up to 10 significant digits
+      </footer>
+    </main>
+
+    <script src="converter.js"></script>
+    <script>
+      let type = 'length';
+      const input = document.querySelector('#value');
+      const from = document.querySelector('#from');
+      const to = document.querySelector('#to');
+      const result = document.querySelector('#result');
+      const formula = document.querySelector('#formula');
+      const fmt = n => Number(n.toPrecision(10)).toLocaleString('en-US', {
+        maximumSignificantDigits: 10,
+      });
+
+      function update() {
+        if (input.value.trim() === '' || !Number.isFinite(input.valueAsNumber)) {
+          result.textContent = 'Enter a valid number';
+          formula.textContent = '';
+          return;
+        }
+
+        const n = input.valueAsNumber;
+        const converted = convert(n, type, from.value, to.value);
+        result.textContent = Number.isFinite(converted)
+          ? `${fmt(converted)} ${units[type][to.value][0]}`
+          : 'Value too large. Enter a smaller number.';
+        formula.textContent = Number.isFinite(converted)
+          ? `${fmt(n)} ${units[type][from.value][0]} = ${fmt(converted)} ${units[type][to.value][0]}`
+          : '';
+      }
+
+      function populate() {
+        for (const element of [from, to]) {
+          const options = Object.entries(units[type]).map(([key, value]) => {
+            return new Option(value[0], key);
+          });
+          element.replaceChildren(...options);
+        }
+        to.selectedIndex = 1;
+        update();
+      }
+
+      document.querySelectorAll('[data-type]').forEach(button => {
+        button.onclick = () => {
+          type = button.dataset.type;
+          document.querySelectorAll('[data-type]').forEach(tab => {
+            tab.setAttribute('aria-selected', String(tab === button));
+          });
+          populate();
+        };
+      });
+
+      input.oninput = update;
+      from.onchange = update;
+      to.onchange = update;
+      document.querySelector('#swap').onclick = () => {
+        const previous = from.value;
+        from.value = to.value;
+        to.value = previous;
+        update();
+      };
+      populate();
+    </script>
+  </body>
+</html>
